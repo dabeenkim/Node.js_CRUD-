@@ -1,15 +1,14 @@
 const express = require('express');
+const GlobalRouter = require('./routes/index.js');
+const indexRouter = require("./schemas/index.js")
 const app = express();
 const port = 3000;
-const postsRouter = require('./routes/posts.js');
-const indexRouter = require("./schemas/index.js")
+//웹에서 MongoDB연결
 const connect = require("./schemas");
 connect();
 
 app.use(express.json());
-app.use("/posts", [postsRouter, indexRouter]);
-
-
+app.use("/", GlobalRouter);
 
 
 

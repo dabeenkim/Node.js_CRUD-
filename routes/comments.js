@@ -1,5 +1,6 @@
-// const express = require('express');
-// const router = express.Router();
+const express = require('express');
+const router = express.Router();
+// const Comment = require("../schmment.js")
 
 // const comments = [
 //     {
@@ -18,12 +19,4 @@
 
 
 
-
-
-
-
-
-
-
-
-// module.exports = router;
+module.exports = router;

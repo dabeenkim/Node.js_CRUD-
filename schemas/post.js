@@ -18,7 +18,7 @@ const postsSchema = new mongoose.Schema({
     type: Date
   },
   password: {
-    type:String,
+    type:Number,
   }
 });
 

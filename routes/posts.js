@@ -4,7 +4,6 @@ const Post = require("../schemas/post.js")
 
 //게시물 조회API
 router.get("/", async (req, res) => {
-
   const posts = await Post.find();
   console.log(posts)
   const data = [];
@@ -16,7 +15,8 @@ router.get("/", async (req, res) => {
       title: posts[i]["title"],
       content: posts[i]["content"],
       createdAt: posts[i]["createdAt"]
-    });  
+    });
+    
   }
     res.status(200).json({ data });
   });
@@ -34,7 +34,7 @@ router.get("/", async (req, res) => {
   const Posts = require("../schemas/post.js")
   router.post("/", async (req,res)=> {
     const {user, title, content,createdAt,password} = req.body;
-
+    console.log(password)
     const exposts = await Posts.find({user});
 
     if(exposts.length){
@@ -45,8 +45,11 @@ router.get("/", async (req, res) => {
     }
     const now = new Date();
     const createdPost = await Posts.create({user, title, content, createdAt:now, password});
-    
-    res.json({data: createdPost});
-  })
+    res.json({
+      data: createdPost
+    });
+  });
+
+  router.put("/:postId/")
 
   module.exports = router;
