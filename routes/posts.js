@@ -18,28 +18,6 @@ router.get("/", async (req, res) => {
       createdAt: posts[i]["createdAt"]
     });  
   }
-  
-    // const data = [
-    //   {      
-    //     "postId": "61",      
-    //     "user": "Developer",      
-    //     "title": "안녕하세요",      
-    //     "createdAt": "2022-07-19T15:43:40.266Z"    
-    //     },  
-    //     {      
-    //       "postId": "62d6d12cd88cadd496a9e54e",      
-    //       "user": "Developer",      
-    //       "title": "안녕하세요",      
-    //       "createdAt": "2022-07-19T15:43:40.266Z"    
-    //       },  
-    //        {      
-    //       "postId": "62d6cc66e28b7aff02e82954",      
-    //       "user": "Developer",      
-    //       "title": "안녕하세요",      
-    //       "createdAt": "2022-07-19T15:23:18.433Z"   
-    //        } 
-    
-    // ];
     res.status(200).json({ data });
   });
   
@@ -65,9 +43,8 @@ router.get("/", async (req, res) => {
           errorMessage:"데이터의 형식이 올바르지 않습니다."
         });
     }
-    
-    const createdPost = await Posts.create({user, title, content, createdAt:new Date, password});
-   
+    const now = new Date();
+    const createdPost = await Posts.create({user, title, content, createdAt:now, password});
     
     res.json({data: createdPost});
   })
