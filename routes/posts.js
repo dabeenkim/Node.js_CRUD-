@@ -5,7 +5,6 @@ const Post = require("../schemas/post.js")
 //게시물 조회API
 router.get("/", async (req, res) => {
   const posts = await Post.find();
-  console.log(posts)
   const data = [];
 
   for(let i = 0; i < posts.length; i++){
@@ -50,6 +49,23 @@ router.get("/", async (req, res) => {
     });
   });
 
-  router.put("/:postId/")
+  router.put("/:postId", async(req, res) => {
+    const {postId} = req.params;
+    const {password, user, content, title } = req.body;
+
+    const existsPosts = await Post.find({postId});
+    if(existsPosts.length){
+      await Post.updateOne(
+        {postId: postId},
+        {password:password},
+        {$set:{user:user}},
+        {$set:{title:title}},
+        {$set:{content:content}},
+        )
+    }
+    res.status(200).json({
+      Massage:"게시글을 수정하였습니다."
+    });
+  })
 
   module.exports = router;

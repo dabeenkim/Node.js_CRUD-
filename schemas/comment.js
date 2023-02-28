@@ -1,33 +1,32 @@
+const mongoose = require("mongoose");
 
-
-
-// const mongoose = require("mongoose");
-
-// const commentSchema = new mongoose.Schema({
+const commentSchema = new mongoose.Schema({
 //   post_Id: {
 //     type: Number,
 //     required: true,
 //     unique: true
 //   },
-//   user: {
-//     type:String,
+//   comment_Id: {
+//     type: Number,
 //     required: true,
-//     unique:  true,
+//     unique: true
 //   },
-//   title: {
-//     type:String,
-//   },
-//   content: {
-//     type:String,
-//   },
-//   createdAt: {
-//     type: String,
-//   },
-//   password: {
-//     type:String,
-//     required: true,
-//     unique: true,
-//   }
-// });
+  user: {
+    type:String,
+    required: true,
+    unique:  true,
+  },
+  content: {
+    type:String,
+    required: true,
+  },
+  createdAt: {
+    type: String,
+  },
+  password: {
+    type:String,
+    required: true
+  }
+});
 
-// module.exports = mongoose.model("posts", postsSchema);
+module.exports = mongoose.model("comments", commentSchema);
