@@ -1,4 +1,5 @@
 const express = require('express');
+const { exists } = require('../schemas/post.js');
 const router = express.Router();
 const Post = require("../schemas/post.js")
 
@@ -53,16 +54,27 @@ router.get("/", async (req, res) => {
     const {postId} = req.params;
     const {password, user, content, title } = req.body;
 
-    const existsPosts = await Post.find({postId});
-    if(existsPosts.length){
-      await Post.updateOne(
-        {postId: postId},
-        {password:password},
-        {$set:{user:user}},
-        {$set:{title:title}},
-        {$set:{content:content}},
-        )
+    const existsPosts = await Post.findOne({_id:postId});
+    if(!existsPosts) {
+      return res.status(404).json({
+        success:false,
+        Massage:"게시글 조회에 실패하였습니다."
+      });
     }
+
+    if(existsPosts.password !== password){
+      return res.status(400).json({
+        success:false,
+        Massage:"데이터 형식이 올바르지 않습니다."
+      })
+    }
+    
+    existsPosts.user = user;
+    existsPosts.content = content;
+    existsPosts.title = title;
+    await existsPosts.save();
+
+
     res.status(200).json({
       Massage:"게시글을 수정하였습니다."
     });
