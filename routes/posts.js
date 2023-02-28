@@ -43,11 +43,11 @@ router.get("/", async (req, res) => {
   });
 
 
+  //게시물 상세정보API
   router.get("/:postId", async (req, res) => {
     const {postId} = req.params;
 
     const onedata = await Post.findOne({ _id :postId});
-    console.log(onedata)
 
 
     //다른값이 오면 null이나 undifined가 나오게된다.
@@ -57,11 +57,6 @@ router.get("/", async (req, res) => {
           Massage:"데이터 형식이 올바르지 않습니다."
         })        
       }    
-
-      // const post = await Post.find();
-      // // console.log(post)
-      // const resultData = post.filter((item) => item._id === postId);
-      // console.log(resultData)
       const data = {
         postId: onedata._id,
         user: onedata.user,
@@ -72,6 +67,9 @@ router.get("/", async (req, res) => {
       
     res.status(200).json({data});
   })
+
+
+  //게시글 수정api
 
   router.put("/:postId", async(req, res) => {
     const {postId} = req.params;
@@ -103,7 +101,7 @@ router.get("/", async (req, res) => {
     });
   })
 
-
+//게시글 삭제api
   router.delete("/:postId", async(req, res) => {
     const {postId} = req.params;
     const {password} = req.body;

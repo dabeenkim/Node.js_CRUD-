@@ -17,6 +17,6 @@ const postsSchema = new mongoose.Schema({
   password: {
     type:Number,
   }
-});
+},{ versionKey : false });
 
 module.exports = mongoose.model("posts", postsSchema);

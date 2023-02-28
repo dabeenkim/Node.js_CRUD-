@@ -17,9 +17,9 @@ const commentSchema = new mongoose.Schema({
     type: String,
   },
   password: {
-    type:String,
+    type:Number,
     required: true
   }
-});
+},{ versionKey : false });
 
 module.exports = mongoose.model("comments", commentSchema);
