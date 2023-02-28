@@ -1,5 +1,4 @@
 const express = require('express');
-const { exists } = require('../schemas/post.js');
 const router = express.Router();
 const Post = require("../schemas/post.js")
 
@@ -24,11 +23,11 @@ router.get("/", async (req, res) => {
 
 
 //게시물작성 API
-  const Posts = require("../schemas/post.js")
+
   router.post("/", async (req,res)=> {
     const {user, title, content,createdAt,password} = req.body;
     console.log(password)
-    const exposts = await Posts.find({user});
+    const exposts = await Post.find({user});
 
     if(exposts.length){
         return res.status(400).json({
@@ -37,7 +36,7 @@ router.get("/", async (req, res) => {
         });
     }
     const now = new Date();
-    const createdPost = await Posts.create({user, title, content, createdAt:now, password});
+    const createdPost = await Post.create({user, title, content, createdAt:now, password});
     res.json({
       data: createdPost
     });
@@ -46,21 +45,29 @@ router.get("/", async (req, res) => {
 
   router.get("/:postId", async (req, res) => {
     const {postId} = req.params;
-    const onedata = await Post.find({ _id :postId});
-      if(!onedata.length) {
+
+    const onedata = await Post.findOne({ _id :postId});
+    console.log(onedata)
+
+
+    //다른값이 오면 null이나 undifined가 나오게된다.
+      if(!onedata) {
         return res.status(400).json({
           success: false,
           Massage:"데이터 형식이 올바르지 않습니다."
         })        
       }    
-      const post = await Post.find();
-      const resultData = post.filter((item) => item._id === postId);
+
+      // const post = await Post.find();
+      // // console.log(post)
+      // const resultData = post.filter((item) => item._id === postId);
+      // console.log(resultData)
       const data = {
-        postId: resultData[0]._id,
-        user: resultData[0].user,
-        title: resultData[0].title,
-        content: resultData[0].content,
-        createdAt: resultData[0].createdAt,
+        postId: onedata._id,
+        user: onedata.user,
+        title: onedata.title,
+        content: onedata.content,
+        createdAt: onedata.createdAt,
       }
       
     res.status(200).json({data});
