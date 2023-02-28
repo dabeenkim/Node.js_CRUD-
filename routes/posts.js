@@ -13,21 +13,14 @@ router.get("/", async (req, res) => {
       postId : posts[i]["_id"],
       user: posts[i]["user"],
       title: posts[i]["title"],
-      content: posts[i]["content"],
       createdAt: posts[i]["createdAt"]
     });
     
   }
-    res.status(200).json({ data });
+    res.status(200).json({ data : data });
   });
   
-  //상세조회 API
-  router.get("/:postId", (req,res) => {
-    const params = req.params;
-    console.log("params", params);
-   
-    res.status(200).json({});
-  });
+  
 
 
 //게시물작성 API
@@ -49,6 +42,29 @@ router.get("/", async (req, res) => {
       data: createdPost
     });
   });
+
+
+  router.get("/:postId", async (req, res) => {
+    const {postId} = req.params;
+    const onedata = await Post.find({ _id :postId});
+      if(!onedata.length) {
+        return res.status(400).json({
+          success: false,
+          Massage:"데이터 형식이 올바르지 않습니다."
+        })        
+      }    
+      const post = await Post.find();
+      const resultData = post.filter((item) => item._id === postId);
+      const data = {
+        postId: resultData[0]._id,
+        user: resultData[0].user,
+        title: resultData[0].title,
+        content: resultData[0].content,
+        createdAt: resultData[0].createdAt,
+      }
+      
+    res.status(200).json({data});
+  })
 
   router.put("/:postId", async(req, res) => {
     const {postId} = req.params;
@@ -78,6 +94,34 @@ router.get("/", async (req, res) => {
     res.status(200).json({
       Massage:"게시글을 수정하였습니다."
     });
+  })
+
+
+  router.delete("/:postId", async(req, res) => {
+    const {postId} = req.params;
+    const {password} = req.body;
+
+    const existsPosts = await Post.findOne({_id:postId});
+    if(!existsPosts) {
+      return res.status(404).json({
+        success:false,
+        Massage:"게시글 조회에 실패하였습니다."
+      });
+    }
+
+    if(existsPosts.password !== password){
+      return res.status(400).json({
+        success:false,
+        Massage:"데이터 형식이 올바르지 않습니다."
+      });
+    }
+    
+      await existsPosts.deleteOne({_id:postId});
+  
+
+    res.json({
+      Message : "게시글을 삭제하였습니다."
+    })
   })
 
   module.exports = router;

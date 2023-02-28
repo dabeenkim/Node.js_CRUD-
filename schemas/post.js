@@ -10,7 +10,6 @@ const postsSchema = new mongoose.Schema({
   },
   content: {
     type:String,
-    required: true,
   },
   createdAt: {
     type: Date

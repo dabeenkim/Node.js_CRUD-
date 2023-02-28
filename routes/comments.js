@@ -3,7 +3,7 @@ const router = express.Router();
 const Comment = require("../schemas/comment.js");
 const Posts = require("../schemas/post.js");
 
-
+//댓글 조회
 router.get("/:postId", async(req,res) => {
     const comments = await Comment.find({});
 
@@ -21,6 +21,7 @@ router.get("/:postId", async(req,res) => {
     res.json({data});
 });
 
+//댓글작성 API
 router.post("/:postId", async(req,res) =>{
     const {user, password, content} = req.body;
     const canpw = await Posts.find({content});
