@@ -4,7 +4,7 @@ const Post = require("../schemas/post.js")
 
 //게시물 조회API
 router.get("/", async (req, res) => {
-  const posts = await Post.find();
+  const posts = await Post.find().sort({ createdAt: -1 });
   const data = [];
 
   for (let i = 0; i < posts.length; i++) {
@@ -28,7 +28,7 @@ router.post("/", async (req, res) => {
   const { user, title, content, createdAt, password } = req.body;
   const exposts = await Post.find({ user });
 
-  if (exposts.length) {
+  if (!exposts) {
     return res.status(400).json({
       success: false,
       errorMessage: "데이터의 형식이 올바르지 않습니다."

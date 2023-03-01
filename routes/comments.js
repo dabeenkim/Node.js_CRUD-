@@ -5,7 +5,7 @@ const Posts = require("../schemas/post.js");
 
 //댓글 조회
 router.get("/:postId/comments", async (req, res) => {
-    const comments = await Comment.find({});
+    const comments = await Comment.find({}).sort({ createdAt: -1 });
 
     if (!comments.length) {
         return res.status(400).json({
@@ -20,7 +20,7 @@ router.get("/:postId/comments", async (req, res) => {
             commentId: comments[i]["_id"],
             user: comments[i]["user"],
             content: comments[i]["content"],
-            createdAt: comments[i]["createdAt"]
+            createdAt: comments[i]["createdAt"],
         });
 
     }
@@ -50,12 +50,7 @@ router.post("/:postId/comments", async (req, res) => {
 router.put("/:postId/comments/:commentId", async (req, res) => {
     const { commentId, postId } = req.params;
     const { password, content, user } = req.body;
-    // const edit_Comment = await Comment.find({postId:postId})
-    // const edit_Comment = await Comment.find({})
-    // const edit_Comment = await Comment.findOne({_id:commentId})
     const edit_Comment = await Comment.findOne({ _id: commentId, postId: postId })
-
-    console.log(edit_Comment)
 
     if (!content) {
         return res.status(400).json({
@@ -97,7 +92,6 @@ router.delete("/:postId/comments/:commentId", async (req, res) => {
     const { password } = req.body;
 
     const delete_Comment = await Comment.findOne({ _id: commentId });
-    console.log(delete_Comment)
     if (!delete_Comment) {
         return res.status(404).json({
             success: false,
