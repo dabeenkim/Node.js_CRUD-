@@ -26,7 +26,6 @@ router.get("/", async (req, res) => {
 
   router.post("/", async (req,res)=> {
     const {user, title, content,createdAt,password} = req.body;
-    console.log(password)
     const exposts = await Post.find({user});
 
     if(exposts.length){
@@ -38,12 +37,13 @@ router.get("/", async (req, res) => {
     const now = new Date();
     const createdPost = await Post.create({user, title, content, createdAt:now, password});
     res.json({
-      data: createdPost
+      data: createdPost,
+      Message:"게시글을 생성하였습니다."
     });
   });
 
 
-  //게시물 상세정보API
+  //게시물 상세조회API
   router.get("/:postId", async (req, res) => {
     const {postId} = req.params;
 
@@ -86,7 +86,7 @@ router.get("/", async (req, res) => {
     if(existsPosts.password !== password){
       return res.status(400).json({
         success:false,
-        Massage:"데이터 형식이 올바르지 않습니다."
+        Message:"데이터 형식이 올바르지 않습니다."
       })
     }
     
