@@ -1,41 +1,26 @@
 const mongoose = require("mongoose");
 
 const UserSchema = new mongoose.Schema({
-    "userId":{
-        type: Number,
-        required: true,
-        unique: true,
-        default: 0,
-    },
-    "nickname":{
+    nickname:{
         type: String,
         required: true,
         unique: true,
     },
-    "password":{
+    password:{
         type: String,
         required: true,
     }
 });
 
-UserSchema.pre("save", async function(next) {
-    const lastUser = await this.constructor.findOne(
-        {},
-        {_id: 0, userId: 1},
-        {sort: {userId: -1}}
-    );
-    this.userId = (lastUser?.userId ?? 0) + 1;
-    next();
-})
-
-
-// UserSchema.virtual("userId").get(function () {
-//     return this._id.toHexString();
-// });
-
-// UserSchema.set("toJSON", {
-//     virtuals : true,
-// })
+// 가상의 userId 값을 할당
+UserSchema.virtual("userId").get(function () {
+    return this._id.toHexString();
+  });
+  
+  // user 정보를 JSON으로 형변환 할 때 virtual 값이 출력되도록 설정
+  UserSchema.set("toJSON", {
+    virtuals: true,
+  });
 
 
 const Users = mongoose.model('User', UserSchema);

@@ -6,20 +6,20 @@ const JWT = require("jsonwebtoken");
 
 //게시물 조회API
 router.get("/", async (req, res) => {
-  const posts = await Post.find().sort({ createdAt: -1 });
+  const posts = await Post.find({}).sort({ createdAt: -1 });
+
   const data = [];
-
-  for (let i = 0; i < posts.length; i++) {
-    data.push({
+  for(let i = 0; i < posts.length; i++){
+    data.push ({
       postId: posts[i]["_id"],
-      user: posts[i]["user"],
       title: posts[i]["title"],
-      createdAt: posts[i]["createdAt"]
+      createdAt: posts[i]["createdAt"],
     });
-
-  }
+  };
+  
   res.status(200).json({ posts: data });
 });
+
 
 
 
@@ -27,9 +27,10 @@ router.get("/", async (req, res) => {
 //게시물작성 API
 
 router.post("/", authMiddleware, async (req, res) => {
-  const {nickname} = res.locals.user;
+  const {userId} = res.locals.user;
   const { title, content } = req.body;
-  const exposts = await Post.find({ user });
+  const exposts = await Post.find({ userId });
+  console.log(userId)
 
   if (!exposts) {
     return res.status(400).json({
@@ -38,7 +39,7 @@ router.post("/", authMiddleware, async (req, res) => {
     });
   }
   const now = new Date();
-  const createdPost = await Post.create({ nickname, title, content, createdAt: now , updateAt: now});
+  const createdPost = await Post.create({ userId, title, content, createdAt: now , updateAt: now});
   res.json({
     data: createdPost,
     Message: "게시글을 생성하였습니다."
@@ -50,15 +51,11 @@ router.post("/", authMiddleware, async (req, res) => {
 router.get("/:postId", async (req, res) => {
   const { postId } = req.params;
 
-  const onedata = await Post.findOne({ _id: postId });
-
+  const onedata = await Post.findOne({ _id: postId }).exec();
 
   //다른값이 오면 null이나 undifined가 나오게된다.
   if (!onedata) {
-    return res.status(400).json({
-      success: false,
-      Massage: "데이터 형식이 올바르지 않습니다."
-    })
+    return res.status(400).json({ errorMassage: "데이터 형식이 올바르지 않습니다."})
   }
   const data = {
     postId: onedata._id,
@@ -67,6 +64,7 @@ router.get("/:postId", async (req, res) => {
     content: onedata.content,
     createdAt: onedata.createdAt,
   }
+  
 
   res.status(200).json({ data });
 })
@@ -74,7 +72,8 @@ router.get("/:postId", async (req, res) => {
 
 //게시글 수정api
 
-router.put("/:postId", async (req, res) => {
+router.put("/:postId", authMiddleware, async (req, res) => {
+  const { userId } = res.locals.user;
   const { postId } = req.params;
   const { password, user, content, title } = req.body;
 
