@@ -10,6 +10,9 @@ const postsSchema = new mongoose.Schema({
   createdAt: {
     type: Date
   },
+  updatedAt: {
+    type: Date
+  },
   password: {
     type:Number,
   }

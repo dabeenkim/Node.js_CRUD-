@@ -5,20 +5,15 @@ const commentSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  user: {
-    type:String,
-    required: true,
-  },
-  content: {
-    type:String,
-    required: true,
-  },
   createdAt: {
-    type: String,
+    type: Date,
   },
-  password: {
-    type:Number,
-    required: true
+  updatedAt: {
+    type: Date,
+  },
+  comment: {
+    type: String,
+    required: true,
   }
 },{ versionKey : false });
 
