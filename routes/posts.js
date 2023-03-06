@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const Post = require("../schemas/post.js")
+const authMiddleware = require("../middlewares/auth-middleware");
+const JWT = require("jsonwebtoken");
 
 //게시물 조회API
 router.get("/", async (req, res) => {
@@ -16,7 +18,7 @@ router.get("/", async (req, res) => {
     });
 
   }
-  res.status(200).json({ data: data });
+  res.status(200).json({ posts: data });
 });
 
 
@@ -24,8 +26,9 @@ router.get("/", async (req, res) => {
 
 //게시물작성 API
 
-router.post("/", async (req, res) => {
-  const { user, title, content, createdAt, password } = req.body;
+router.post("/", authMiddleware, async (req, res) => {
+  const {nickname} = res.locals.user;
+  const { title, content } = req.body;
   const exposts = await Post.find({ user });
 
   if (!exposts) {
@@ -35,7 +38,7 @@ router.post("/", async (req, res) => {
     });
   }
   const now = new Date();
-  const createdPost = await Post.create({ user, title, content, createdAt: now, password });
+  const createdPost = await Post.create({ nickname, title, content, createdAt: now , updateAt: now});
   res.json({
     data: createdPost,
     Message: "게시글을 생성하였습니다."
