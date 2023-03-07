@@ -69,8 +69,8 @@ try{
 router.get("/:postId", async (req, res) => {
   try{
   const { postId } = req.params;
-
   const onedata = await Post.findOne({ _id: postId }).exec();
+
   
   const data = {
     postId: onedata._id,
@@ -95,11 +95,13 @@ router.put("/:postId", authMiddleware, async (req, res) => {
 try{
   const { content, title } = req.body;
   const existsPosts = await Post.findOne({ _id: postId });
+  console.log(postId)
+  
 
   if (!existsPosts) {
     return res.status(404).json({errorMassage: "게시글 조회에 실패하였습니다."});
   }
-  if (existsPosts.user.toString() !== user._id.toString()) {
+  if (postId !== existsPosts._id) {
     return res.status(403).json({errorMessage: "게시글 수정의 권한이 존재하지 않습니다."});
   }
   if(!title || typeof title !== "string" || title.length > 50) {
@@ -110,6 +112,8 @@ try{
   }
   existsPosts.title = title;
   existsPosts.content = content;
+  console.log(title,content)
+
   await existsPosts.save();
 
   res.status(200).json({Massage: "게시글을 수정하였습니다."});
@@ -134,7 +138,7 @@ router.delete("/:postId", authMiddleware, async (req, res) => {
   if (!existsPosts) {
     return res.status(404).json({Massage: "게시글이 존재하지 않습니다."});
   }
-  if(existsPosts.user.toString() !== user_id.toString()) {
+  if(postId!== existsPosts._id) {
     return res.status(403).json({errorMessage: "게시글의 삭제 권한이 존재하지 않습니다."})
   }
 

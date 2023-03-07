@@ -3,10 +3,13 @@ const router = express.Router();
 const Comment = require("../schemas/comment.js");
 const Posts = require("../schemas/post.js");
 const authMiddleware = require("../middlewares/auth-middleware");
+const Users = require('../schemas/user.js');
 
 //댓글 조회
-router.get("/:postId/comments", async (req, res) => {
-    try{
+router.get("/:postId/comments", authMiddleware, async (req, res) => {
+ try{
+    //객체구조분해할당으로  nickname을 가져와야 user의 모든값을 가져오지않는다.
+    const {nickname} = res.locals.user;
     const comments = await Comment.find({}).sort({ createdAt: -1 });
 
     if (!comments) {
@@ -16,9 +19,10 @@ router.get("/:postId/comments", async (req, res) => {
     for (let i = 0; i < comments.length; i++) {
         data.push({
             commentId: comments[i]["_id"],
-            user: comments[i]["user"],
+            nickname: nickname,
             content: comments[i]["content"],
             createdAt: comments[i]["createdAt"],
+            updatedAt: comments[i]["updatedAt"],
         });
 
     }
@@ -33,20 +37,30 @@ router.post("/:postId/comments", authMiddleware, async (req, res) => {
   try{
     const { postId } = req.params;
     const { comment } = req.body;
+    console.log(postId, comment);
+  
+    const onedata = await Posts.findOne({ _id: postId }).exec();
 
-    const canpw = await Posts.findById({ postId });
-    if(!canpw) {
-        return res.status(412),json({errorMessage:"게시글이 존재하지 않습니다."})
+    console.log("onedata:", onedata);
+    if (!onedata) {
+      return res.status(412).json({ errorMessage: "게시글이 존재하지 않습니다." });
     }
-    if (comment || comment.length > 500) {
-        return res.status(400).json({errorMessage: "데이터 형식이 올바르지 않습니다."})
+    if (!comment || comment.length > 500) {
+      return res.status(400).json({ errorMessage: "데이터 형식이 올바르지 않습니다." });
     }
     const now = new Date();
-    const created_Comment = await Comment.create({ postId, comment, createdAt:now, updatedAt:now});
-    res.json({
-        data: created_Comment,
-        Message: "댓글을 생성하였습니다."
+    const created_Comment = await Comment.create({
+      postId,
+      comment,
+      createdAt: now,
+      updatedAt: now,
     });
+    console.log("------", created_Comment);
+    res.json({
+      data: created_Comment,
+      Message: "댓글을 생성하였습니다.",
+    }); 
+  
 }catch(err){
     if(err.name === "ValidationError") {
         return res.status(412).json({errorMessage:"데이터 형식이 올바르지 않습니다."})
@@ -66,6 +80,7 @@ try{
 
     //$set을 사용해야 해당 필드만 바뀌게된다.
     const result = await Comment.updateOne({ _id: commentId }, { $set: { comment: comment } });
+    console.log(result)
 
     if (!result) {
         return res.status(400).json({errorMessage: "게시글이 존재하지 않습니다." })
@@ -96,15 +111,10 @@ try{
     if(!post) {
         return res.status(404).json({errorMessage:"게시글이 존재하지 않습니다."})
     }
-    const delete_Comment = await Comment.findOne({ _id: commentId });
+    const delete_Comment = await Comment.findOne({ _id : commentId });
+    console.log(delete_Comment)
     if (!delete_Comment) {
         return res.status(404).json({errorMessage: "댓글 조회에 실패하였습니다."})
-    }
-    if(delete_Comment.post.toString() !== postId){
-        return res.status(400).json({errorMessage:"댓글과 게시글이 일치하지 않습니다."})
-    }
-    if(delete_Comment.author.toString() !== req.user._id){
-        return res.status(403).json({errorMessage:"댓글의 삭제 권한이 존재하지 않습니다."})
     }
     
     await delete_Comment.deleteOne({ _id: commentId });
