@@ -75,6 +75,7 @@ router.get("/:postId", async (req, res) => {
   const data = {
     postId: onedata._id,
     user: onedata.user,
+    nickname: onedata.nickname,
     title: onedata.title,
     content: onedata.content,
     createdAt: onedata.createdAt,
