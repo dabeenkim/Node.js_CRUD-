@@ -1,5 +1,3 @@
-// middlewares/auth-middleware.js
-
 const jwt = require("jsonwebtoken");
 const User = require("../schemas/user");
 
@@ -18,6 +16,7 @@ module.exports = async (req, res, next) => {
   try {
     const { userId } = jwt.verify(authToken, "custom-secret-key");
     const user = await User.findById(userId);
+    //User스키마에서 nickname 필드를 조회하여 가져온다.
     res.locals.user = user;
     next();
   } catch (err) {

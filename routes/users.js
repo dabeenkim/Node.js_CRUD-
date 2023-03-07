@@ -45,6 +45,7 @@ router.post("/signup", async (req, res) => {
 
 //로그인api
 router.post("/login", async (req, res) => {
+  try {
     const { nickname, password } = req.body;
 
     const user = await User.findOne({ nickname });
@@ -62,6 +63,7 @@ router.post("/login", async (req, res) => {
 
     res.cookie("Authorization", `Bearer ${token}`);
     res.status(200).json({ token });
+  }catch(err) {return res.status(400).json({errorMessage: "로그인에 실패하였습니다." })}
 });
 
 

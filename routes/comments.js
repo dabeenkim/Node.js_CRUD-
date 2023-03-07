@@ -6,15 +6,12 @@ const authMiddleware = require("../middlewares/auth-middleware");
 
 //댓글 조회
 router.get("/:postId/comments", async (req, res) => {
+    try{
     const comments = await Comment.find({}).sort({ createdAt: -1 });
 
-    if (!comments.length) {
-        return res.status(400).json({
-            success: false,
-            errorMassage: "데이터 형식이 올바르지 않습니다."
-        })
+    if (!comments) {
+        return res.status(400).json({ errorMassage: "게시글이 존재하지 않습니다."})
     }
-
     const data = [];
     for (let i = 0; i < comments.length; i++) {
         data.push({
@@ -26,6 +23,9 @@ router.get("/:postId/comments", async (req, res) => {
 
     }
     res.json({ data });
+}catch(err){
+    return res.status(400).json({errorMessage:"댓글 조회에 실패하였습니다."})
+}
 });
 
 //댓글작성 API

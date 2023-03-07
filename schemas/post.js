@@ -4,6 +4,10 @@ const postsSchema = new mongoose.Schema({
   title: {
     type:String,
   },
+  nickname: {
+    type: String,
+    required: true
+  },
   content: {
     type:String,
   },
